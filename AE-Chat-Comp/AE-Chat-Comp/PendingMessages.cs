@@ -1,6 +1,7 @@
 ﻿namespace AE_Chat_Comp
 {
     using System.Collections.Generic;
+    using System.IO;
     using System.Xml;
 
     static class PendingMessages
@@ -9,6 +10,9 @@
         
         public static int AppendPendingMessage(string sender, string receiver, string timestamp, string message)
         {
+            File.SetAttributes(Path, FileAttributes.Normal);
+            File.Decrypt(Path);
+
             XmlDocument doc = new XmlDocument();
             doc.Load(Path);
 
@@ -55,11 +59,17 @@
             doc.SelectSingleNode("/pending_messages").AppendChild(msg);
             doc.Save(Path);
 
+            File.Encrypt(Path);
+            File.SetAttributes(Path, FileAttributes.Hidden | FileAttributes.ReadOnly | FileAttributes.Encrypted);
+
             return msgId;
         }
 
         public static void RemovePendingMessage(int msgId)
         {
+            File.SetAttributes(Path, FileAttributes.Normal);
+            File.Decrypt(Path);
+
             XmlDocument doc = new XmlDocument();
             doc.Load(Path);
 
@@ -67,6 +77,9 @@
             msg.ParentNode.RemoveChild(msg);
 
             doc.Save(Path);
+
+            File.Encrypt(Path);
+            File.SetAttributes(Path, FileAttributes.Hidden | FileAttributes.ReadOnly);
         }
     }
 }

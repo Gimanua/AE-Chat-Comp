@@ -30,6 +30,8 @@
                     writer.WriteStartElement("pending_messages");
                     writer.WriteEndElement();
                 }
+                File.Encrypt(PendingMessagesPath);
+                File.SetAttributes(PendingMessagesPath, FileAttributes.Hidden | FileAttributes.ReadOnly | FileAttributes.Encrypted);
             }
 
             using (XmlReader reader = XmlReader.Create(ConfigPath))
@@ -49,5 +51,6 @@
                 }
             }
         }
+        
     }
 }
