@@ -56,6 +56,7 @@
 
         private static void HandleServerResponse(object sender, UploadValuesCompletedEventArgs e)
         {
+            Communicating = false;
             if (e.Error != null || e.Cancelled)
             {
                 MessageBox.Show(e.Error.Message, "Fel", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -63,35 +64,30 @@
             }
             
             string responseString = Encoding.Default.GetString(e.Result);
-            if (responseString.StartsWith("ResponseToLogin:"))
+            if (responseString.StartsWith("RTL:"))
             {
-                if(responseString.Substring(16,2) == "S:")
-                {
-                    //Det lyckades
-                    MessageBox.Show(responseString.Substring(18), "Respons", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                if(responseString.Substring(4,2) == "S:")
+                    MessageBox.Show(responseString.Substring(6), "Respons", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
-                    MessageBox.Show(responseString.Substring(18), "Fel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(responseString.Substring(6), "Fel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            else if (responseString.StartsWith("ResponseToRegister:"))
+            else if (responseString.StartsWith("RTR:"))
             {
-                if (responseString.Substring(19, 2) == "S:")
-                {
-                    //Det lyckades
-                    MessageBox.Show(responseString.Substring(21), "Respons", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
+                if (responseString.Substring(4, 2) == "S:")
+                    MessageBox.Show(responseString.Substring(6), "Respons", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 else
-                    MessageBox.Show(responseString.Substring(21), "Fel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(responseString.Substring(6), "Fel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-            else if (responseString.StartsWith("ResponseToSendMessage:"))
+            else if (responseString.StartsWith("RTSM:"))
             {
-                if (responseString.Substring(22, 2) == "S:")
+                if (responseString.Substring(5, 2) == "S:")
                 {
-                    //Det lyckades
-                    MessageBox.Show(responseString.Substring(24), "Respons", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    //Ta bort från pending_messages
+                    if(int.TryParse(responseString.Substring(7), out int msgId))
+                        PendingMessages.RemovePendingMessage(msgId);
                 }
                 else
-                    MessageBox.Show(responseString.Substring(24), "Fel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show(responseString.Substring(7), "Fel", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

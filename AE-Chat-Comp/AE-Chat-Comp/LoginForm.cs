@@ -41,7 +41,6 @@
 
             ServerCommunicator.Communicating = true;
             ServerCommunicator.Register(textBoxUserName.Text, textBoxPassWord.Text);
-            ServerCommunicator.Communicating = false;
         }
 
         private void ButtonLogIn_Click(object sender, EventArgs e)
@@ -51,7 +50,6 @@
 
             ServerCommunicator.Communicating = true;
             ServerCommunicator.Login(textBoxUserName.Text, textBoxPassWord.Text);
-            ServerCommunicator.Communicating = false;
         }
         
         private bool ValidInput()

@@ -75,48 +75,13 @@
                 {
                     TimeSpan utcOffset = TimeZone.CurrentTimeZone.GetUtcOffset(DateTime.Now);
                     string timestamp = DateTime.UtcNow.ToString("yyyy-MM-ddTHH:mm:ss" + ((utcOffset < TimeSpan.Zero) ? "-" : "+") + utcOffset.Hours.ToString("00") + ":" + utcOffset.Minutes.ToString("00"));
-                    AppendPendingMessage(Username, tabControlConversations.SelectedTab.Text, timestamp, currentSendTextBox.Text);
+                    int msgId = PendingMessages.AppendPendingMessage(Username, tabControlConversations.SelectedTab.Text, timestamp, currentSendTextBox.Text);
                     currentReadTextBox.AppendText(currentSendTextBox.Text + "\n");
                     currentSendTextBox.Clear();
                     currentSendTextBox.Select(0, 0);
-                    ServerCommunicator.SendMessage(Username, tabControlConversations.SelectedTab.Text, timestamp, currentSendTextBox.Text, "removethis");
-                    
+                    ServerCommunicator.SendMessage(Username, tabControlConversations.SelectedTab.Text, timestamp, currentSendTextBox.Text, msgId.ToString());
                 }
             }
-        }
-
-        private void AppendPendingMessage(string sender, string receiver, string timestamp, string message)
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.Load(Configurator.PendingMessagesPath);
-
-            XmlElement msg = doc.CreateElement("pending_message");
-
-            XmlAttribute atr = doc.CreateAttribute("sender");
-            atr.Value = sender;
-            msg.Attributes.Append(atr);
-
-            atr = doc.CreateAttribute("receiver");
-            atr.Value = receiver;
-            msg.Attributes.Append(atr);
-
-            atr = doc.CreateAttribute("timestamp");
-            atr.Value = timestamp;
-            msg.Attributes.Append(atr);
-
-            msg.InnerText = message;
-
-            doc.SelectSingleNode("/pending_messages").AppendChild(msg);
-            doc.Save(Configurator.PendingMessagesPath);
-        }
-
-        private void RemovePendingMessage()
-        {
-            XmlDocument doc = new XmlDocument();
-            doc.Load(Configurator.PendingMessagesPath);
-            XmlNode node = doc.SelectSingleNode("/pending_messages");
-            node.RemoveChild(node.FirstChild);
-            doc.Save(Configurator.PendingMessagesPath);
         }
     }
 }
